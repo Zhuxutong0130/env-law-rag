@@ -1,0 +1,10 @@
+{"qid": 1, "query": "餐馆排烟到居民楼找谁投诉", "expect_law": "大气污染防治法"}
+{"qid": 2, "query": "工厂半夜施工扰民怎么办", "expect_law": "噪声污染防治法"}
+{"qid": 3, "query": "往河里倒工业废水有什么后果", "expect_law": "水污染防治法"}
+{"qid": 4, "query": "焚烧秸秆违法吗", "expect_law": "大气污染防治法"}
+{"qid": 5, "query": "汽车乱鸣笛归谁管", "expect_law": "噪声污染防治法"}
+{"qid": 6, "query": "建工厂之前需要做环评吗", "expect_law": "环境保护法"}
+{"qid": 7, "query": "饮用水水源地旁边能建化工厂吗", "expect_law": "水污染防治法"}
+{"qid": 8, "query": "广场舞音响声音太大怎么投诉", "expect_law": "噪声污染防治法"}
+{"qid": 9, "query": "建筑工地尘土飞扬违反什么规定", "expect_law": "大气污染防治法"}
+{"qid": 10, "query": "燃煤电厂的废气要怎么处理", "expect_law": "大气污染防治法"}

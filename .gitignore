@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# 模型与向量索引（体积大，README 提供重建命令）
+models/
+*.index
+*.safetensors
+*.bin
+
+# 环境与密钥
+.env
+*.env
+
+# 运行时产物
+uploads/
+exports/
+session_data/
+output/
+processed_tmp/
+
+# IDE / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

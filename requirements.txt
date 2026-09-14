@@ -1,0 +1,15 @@
+# 核心依赖（宽松版本约束，冻结快照见 requirements-freeze.txt）
+torch>=2.5
+transformers>=4.45
+peft>=0.13
+accelerate
+datasets
+sentence-transformers>=3.0
+faiss-cpu>=1.8
+langchain
+langchain-core
+langchain-community
+langchain-openai
+openai
+gradio
+numpy

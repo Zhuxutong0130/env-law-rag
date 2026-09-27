@@ -70,4 +70,4 @@ with gr.Blocks(title="环境法规智能问答") as demo:
     btn.click(chat, inputs=inp, outputs=[out, sources])
     inp.submit(chat, inputs=inp, outputs=[out, sources])
 
-demo.launch()   # 本地跑，默认 http://127.0.0.1:7860
+demo.launch(server_name="0.0.0.0")   # 容器内必须监听 0.0.0.0，宿主机端口映射才能访问到；本地跑不受影响

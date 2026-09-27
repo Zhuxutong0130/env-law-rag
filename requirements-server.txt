@@ -1,0 +1,25 @@
+# 服务端运行时依赖（Docker 镜像专用）
+# 与 requirements.txt 的区别：torch 用 CPU 版（镜像 7GB -> ~1.5GB），
+# 裁掉 peft/accelerate/datasets（仅训练用，服务端不需要）
+# 训练环境仍用根目录 requirements.txt
+
+# 国内镜像（腾讯云），避免容器内直连 pypi.org 的 SSL 抖动
+-i https://mirrors.cloud.tencent.com/pypi/simple/
+--trusted-host mirrors.cloud.tencent.com
+
+# torch CPU：从本地 wheels 安装（离线部署模式，build 不依赖外网）
+./wheels/torch-2.14.0+cpu-cp311-cp311-manylinux_2_28_x86_64.whl
+
+# 推理链路
+transformers>=4.45
+sentence-transformers>=3.0
+faiss-cpu>=1.8
+numpy
+
+# LLM 调用 + 服务框架
+langchain
+langchain-core
+langchain-community
+langchain-openai
+openai
+gradio

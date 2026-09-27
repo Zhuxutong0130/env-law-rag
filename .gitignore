@@ -27,3 +27,4 @@ processed_tmp/
 .vscode/
 .DS_Store
 Thumbs.db
+wheels/

@@ -103,6 +103,30 @@ python app.py                          # 浏览器打开 http://127.0.0.1:7860
 - 拒答与误拒存在 tradeoff（见报告），阈值 0.45 仅对本语料分布有效
 - 微调用小模型（1.5B）生成质量上限有限，复杂数字推理场景仍需大模型兜底
 
+## MCP Server：把检索能力暴露为工具
+
+`src/mcp_server.py` 将两级检索封装为 MCP（Model Context Protocol）server，供任意 MCP 客户端（Claude Desktop、UUMit 等 Agent）调用——从"一个 RAG 应用"升级为"可被外部 Agent 编排的能力节点"。
+
+```bash
+pip install -r requirements-mcp.txt   # mcp>=1.2,<2
+python src/mcp_server.py              # stdio 模式，首次启动加载模型约 30s
+```
+
+| 工具 | 说明 |
+|---|---|
+| `search_law(query, top_k=3)` | 自然语言 → 两级检索 → 条款片段（含 rank / recall_score / rerank_score） |
+| `pipeline_info()` | 自检：索引规模、收录法规、模型版本、管线结构 |
+
+设计要点：fail-fast（资产缺失或索引-元数据不同步直接拒启）；日志只走 stderr（stdout 是协议通道）；离线优先（`HF_HUB_OFFLINE=1`，模型缓存缺失时才回退网络）。客户端配置示例：
+
+```json
+{
+  "command": "python",
+  "args": ["<仓库路径>/src/mcp_server.py"],
+  "transport": "stdio"
+}
+```
+
 ## License
 
 [MIT](LICENSE)

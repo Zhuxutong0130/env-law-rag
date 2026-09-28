@@ -134,6 +134,16 @@ def _regenerate_with_feedback(query: str, chunks: list[dict], draft: str,
     return {"answer": answer, "cited_chunks": cited, "refused": refused}
 
 
+def _is_fixable_refuse(issues: list[str]) -> bool:
+    """refuse 降级判断：虚构引用/编造内容可修（降级 revise），越界作答不可修。
+
+    理由：虚构引用时正确证据就在检索结果里，重答一次大概率修复；
+    越界作答是知识库本身的边界，重答只会再编一次。
+    """
+    text = "".join(issues)
+    return not any(kw in text for kw in ("越界", "超出", "超纲", "范围外"))
+
+
 def run_dual_agent(query: str, chunks: list[dict], client=None,
                    max_revisions: int = 1) -> dict:
     """双 Agent 编排主入口。
@@ -141,6 +151,10 @@ def run_dual_agent(query: str, chunks: list[dict], client=None,
     返回结构与 generate_answer 兼容，另加：
       verify:  最终一轮校验裁决 {"verdict", "issues"}
       revised: 是否触发过修改重答
+
+    refuse 二分处置（v2 迭代）：
+      虚构引用类 refuse → 降级为 revise（证据在手，重答可修）
+      越界作答类 refuse  → 终态拒答（重答无意义）
     """
     client = client or get_client()
 
@@ -157,6 +171,18 @@ def run_dual_agent(query: str, chunks: list[dict], client=None,
         if verdict["verdict"] == "pass":
             break
         if verdict["verdict"] == "refuse":
+            if _is_fixable_refuse(verdict["issues"]) and not revised:
+                # 虚构引用类 refuse：证据就在 chunks 里，降级 revise 重答
+                verdict = {"verdict": "revise",
+                           "issues": verdict["issues"] + ["（降级）引用造假可修，重答"]}
+                result = _regenerate_with_feedback(
+                    query, chunks, result["answer"], verdict["issues"], client)
+                revised = True
+                if result["refused"]:
+                    verdict = {"verdict": "refuse", "issues": ["重答后生成端拒答"]}
+                    break
+                continue
+            # 越界类 refuse 或降级重答后再次 refuse：终态
             result.update(
                 answer="问题超出知识库范围，无法回答。",
                 cited_chunks=[], refused=True,

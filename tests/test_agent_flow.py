@@ -78,8 +78,12 @@ def test_refuse_downgrade_logic() -> None:
         out = agent_flow.run_dual_agent("q", chunks, client="mock")
         assert out["revised"] and out["verify"]["verdict"] == "pass" and mr.called
 
-        # 路径二：越界 refuse → 终态，不重答
+        # 路径二：越界 refuse → 终态，不重答（side_effect 必须先清空，
+        # 否则优先于 return_value，会沿用路径一耗尽的序列；
+        # mr 的调用记录也从路径一残留，先 reset）
+        mr.reset_mock()
         mg.return_value = {"answer": "强行作答", "cited_chunks": [], "refused": False}
+        mv.side_effect = None
         mv.return_value = scope_refuse
         out = agent_flow.run_dual_agent("q", chunks, client="mock")
         assert out["refused"] and not out["revised"] and not mr.called
